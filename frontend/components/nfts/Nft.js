@@ -11,9 +11,7 @@ const Host = () => {
 
     const { nftAbi, nftAddress, me } = useContext(XContext)
     const [ownedNFT, setOwnedNFT] = useState(null)
-    const [eth, setEth] = useState()
     const [loading, setLoading] = useState(false)
-
 
 
     const updateUIValues = async () => {

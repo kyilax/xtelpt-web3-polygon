@@ -5,6 +5,11 @@
         "type": "constructor"
     },
     {
+        "inputs": [],
+        "name": "XTELPT__PassDenied",
+        "type": "error"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {
@@ -16,6 +21,24 @@
         ],
         "name": "RequestedID",
         "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "AccessPass",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "month",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "year",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     },
     {
         "inputs": [
@@ -245,6 +268,48 @@
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_year",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_month",
+                "type": "string"
+            }
+        ],
+        "name": "changeAccess",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "_year",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "_month",
+                "type": "string"
+            }
+        ],
+        "name": "checkAccess",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "counter",
         "outputs": [
@@ -323,11 +388,6 @@
             {
                 "internalType": "uint256",
                 "name": "_end",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_fee",
                 "type": "uint256"
             },
             {
@@ -649,11 +709,16 @@
                 "internalType": "uint256",
                 "name": "_id",
                 "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "hasPass",
+                "type": "bool"
             }
         ],
         "name": "joinMeeting",
         "outputs": [],
-        "stateMutability": "payable",
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {

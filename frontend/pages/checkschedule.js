@@ -3,18 +3,21 @@ import moment from "moment"
 import { useRouter } from 'next/router'
 import { XContext } from '../context/XContext';
 import { ethers, utils } from 'ethers'
+import axios from 'axios';
 
 const Checkschedule = () => {
   const router = useRouter()
   const hostAccount = router.query.addr
 
-
-  const { xtelptAddress, abi, me } = useContext(XContext)
+  const { xtelptAddress, abi, me, nftAbi, nftAddress, } = useContext(XContext)
+  const [ownedNFT, setOwnedNFT] = useState(null)
 
   const [meeting, setMeeting] = useState()
   const [loading, setLoading] = useState(false)
   const [close, setClose] = useState(false)
   const [close2, setClose2] = useState(false)
+  const [error, setError] = useState(false)
+  const [hasPass, setHasPass] = useState(false)
 
   const updateUIValues = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -47,7 +50,7 @@ const Checkschedule = () => {
 
   }
 
-  const handleCreate = async (host, id, fee) => {
+  const handleCreate = async (host, id) => {
     setLoading(true)
     console.log("started")
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -55,7 +58,7 @@ const Checkschedule = () => {
     const xtelptContract = new ethers.Contract(xtelptAddress, abi, signer)
 
     try {
-      const joinMeeting = await xtelptContract.joinMeeting(host, id, { value: fee, gasLimit: 5000000 })
+      const joinMeeting = await xtelptContract.joinMeeting(host, id, hasPass)
       setClose(true)
 
 
@@ -65,6 +68,7 @@ const Checkschedule = () => {
       //   query: { addr: hostAccount },
       // })
     } catch (error) {
+      setError(true)
       setClose2(true)
       setLoading(false)
       console.log(error)
@@ -78,6 +82,70 @@ const Checkschedule = () => {
     }, 1000);
   }, [hostAccount])
 
+  const checkNft = async () => {
+
+    if (!window.ethereum) {
+      return alert('noMetaMask')
+    }
+    try {
+      const addressArray = await window.ethereum.request({
+        method: 'eth_accounts',
+      })
+
+      if (addressArray.length > 0) {
+        let arr = []
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const xtelptNFTContract = new ethers.Contract(nftAddress, nftAbi, provider)
+        const myNFT = await xtelptNFTContract.getMyNFT(addressArray[0])
+
+        for (let i = 0; i < myNFT.length; i++) {
+          await axios.get(`https://gateway.pinata.cloud/ipfs/${myNFT[i]}`)
+            .then(function (response) {
+              console.log(response)
+              if (response.data.name) {
+                arr.push(response.data)
+              }
+
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        }
+        setOwnedNFT(arr)
+
+        for (let i = 0; i < ownedNFT?.length; i++) {
+          const provider = new ethers.providers.Web3Provider(window.ethereum)
+          const xtelptContract = new ethers.Contract(xtelptAddress, abi, provider)
+
+          const access = await xtelptContract.AccessPass()
+
+          console.log("access", ownedNFT[i])
+
+          if (access[0].toString().toLowerCase() == ownedNFT[i]?.attributes?.[1].value?.toString().toLowerCase() && access[1].toString().toLowerCase() == ownedNFT[i]?.attributes?.[0].value?.toString().toLowerCase()) {
+            setHasPass(true)
+            console.log("hasPass", hasPass)
+          }
+        }
+
+
+      } else {
+        alert("No MetaMask")
+
+      }
+
+    } catch (err) {
+      console.log(err)
+
+    }
+
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      checkNft()
+    }, 1000);
+  })
+
   return (
 
     <div className='w-full h-vh bg-hero bg-right bg-no-repeat flex-1'>
@@ -86,7 +154,7 @@ const Checkschedule = () => {
           <svg aria-hidden="true" className="flex-shrink-0 w-5 h-5 text-blue-700 dark:text-blue-800" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path></svg>
           <span className="sr-only">Info</span>
           <div className="ml-3 text-sm font-medium text-blue-700 dark:text-blue-800">
-            Transaction in progress an activity has been added to your Notification
+            {error ? "You do not have an access pass please visit the market place to purchase one" : "Transaction in progress an activity has been added to your Notification"}
           </div>
           <button type="button" onClick={() => setClose(false)} className="ml-auto -mx-1.5 -my-1.5 bg-blue-100 text-blue-500 rounded-lg focus:ring-2 focus:ring-blue-400 p-1.5 hover:bg-blue-200 inline-flex h-8 w-8 dark:bg-blue-200 dark:text-blue-600 dark:hover:bg-blue-300" data-dismiss-target="#alert-1" aria-label="Close">
             <span className="sr-only">Close</span>
@@ -118,12 +186,12 @@ const Checkschedule = () => {
                   <div className='justify-start pl-6 font-noto font-semibold text-[#817C7C] w-34 text-12'>{moment.unix(item?.start).format("HH:mmA")} - {moment.unix(item?.end).format("HH:mmA")}
                   </div>
                   <div className='justify-center items-center'><p className='justify-center text-12 text-red-400'>{item?.desc}</p></div>
-                  <div className='justify-center items-center'> <p className='justify-center text-12 text-[#817C7C]'>{ethers.utils.formatEther(item?.fee)} Matic</p></div>
+                  {/* <div className='justify-center items-center'> <p className='justify-center text-12 text-[#817C7C]'>{ethers.utils.formatEther(item?.fee)} Matic</p></div> */}
                   <div className=' items-center pr-7 justify-end'>
-                  {item?.booked == false ? (
+                    {item?.booked == false ? (
                       <>
                         {me?.role == "User" ?
-                          <div onClick={() => handleCreate(item?.host, item?.index, item?.fee)} className={`text-white  cursor-pointer font-noto rounded-[10px] h-[40px] w-[120px] text-center font-semibold bg-green-600  py-2 text-[14px]`}>
+                          <div onClick={() => handleCreate(item?.host, item?.index)} className={`text-white  cursor-pointer font-noto rounded-[10px] h-[40px] w-[120px] text-center font-semibold bg-green-600  py-2 text-[14px]`}>
                             Book Session
                           </div>
                           :

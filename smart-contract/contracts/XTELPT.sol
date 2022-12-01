@@ -1,20 +1,10 @@
-/**
- *Submitted for verification at polygonscan.com on 2022-11-16
-*/
-
-/**
- *Submitted for verification at polygonscan.com on 2022-11-12
-*/
-
-/**
- *Submitted for verification at polygonscan.com on 2022-11-04
-*/
-
 // SPDX-License-Identifier: MIT
 
 pragma solidity ^0.8.7;
 
 // import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol";
+
+error XTELPT__PassDenied();
 
 contract XTELPT  {
     address public owner;
@@ -39,6 +29,9 @@ contract XTELPT  {
     mapping(address => meeting[]) public Meeting;
 
     campaign [] public Campaign;
+
+    /* Access Variable */
+    access public AccessPass;
 
     uint256 public campaignIndex;
     
@@ -96,6 +89,11 @@ contract XTELPT  {
         string desc;
     }
 
+    struct access {
+        string month;
+        string year;
+    }
+
     /* Modifiers */
     modifier onlyOwner  {
         require(msg.sender == owner);
@@ -127,6 +125,20 @@ contract XTELPT  {
         interval = 300;
     }
 
+
+    function changeAccess(string memory _year, string memory _month) public onlyOwner {
+        AccessPass.month = _month;
+        AccessPass.year = _year;
+    }
+
+     function checkAccess(string memory _year, string memory _month) public onlyOwner view returns(bool) {
+        if(keccak256(abi.encodePacked(AccessPass.month)) == keccak256(abi.encodePacked(_month))
+         && keccak256(abi.encodePacked(AccessPass.year)) == keccak256(abi.encodePacked(_year)) ) {
+             return true;
+         } else {
+             return false;
+         }
+    }
 
     /**
      * @dev This function `createUser` any body can call this functions and the senders profile
@@ -190,7 +202,10 @@ contract XTELPT  {
      * @dev This function `joinMeeting` allows only the User to call it hence the `OnlyUser` modifier
      * after which the meeting ID is specified and the user would be assigned to the meeting
      */
-    function joinMeeting(address _host, uint256 _id) public onlyUser {
+    function joinMeeting(address _host, uint256 _id, bool hasPass) public onlyUser {
+        if(!hasPass){
+            revert XTELPT__PassDenied();
+        }
         Meeting[_host][_id].user = payable(msg.sender);
         Meeting[_host][_id].booked = true;
     } 
@@ -257,16 +272,6 @@ contract XTELPT  {
    
    
     /** Getter Functions */
-
-    function isUser(address addr) public view returns (bool){
-        require(keccak256(abi.encodePacked(UserProfile[addr].role)) == keccak256(abi.encodePacked("User")), "NOT A USER");
-        return true;
-    }
-   
-    function isHost(address addr) public view returns (bool){
-        require(keccak256(abi.encodePacked(UserProfile[addr].role)) == keccak256(abi.encodePacked("Host")), "NOT A USER");
-        return true;
-    }
 
     function meetingNum() public view returns (uint256) {
         return meetingIndex;

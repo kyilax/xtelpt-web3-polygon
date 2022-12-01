@@ -21,9 +21,10 @@ const Connected = () => {
                     <div onClick={() => router.push('/host')} className='mr-[20px] hover:text-gray-500 cursor-pointer leading-[10px] '>HOSTS</div>
                     <div className='mr-[20px] hover:text-gray-500 cursor-pointer leading-[10px] '><NewCampaign /></div>
                     <div onClick={() => router.push('/community')} className='mr-[20px] hover:text-gray-500 cursor-pointer leading-[10px] '>COMMUNITY</div>
+                    <div onClick={() => router.push('/dashboard')} className='mr-[20px] hover:text-gray-500 cursor-pointer leading-[10px] '>NFTS</div>
                 </div>
                 <div >
-                {!me?.role ? (
+                    {!me?.role ? (
                         <InitAccount />
                     ) : (
                         <div className='flex'>

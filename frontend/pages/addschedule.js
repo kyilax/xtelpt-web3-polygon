@@ -21,8 +21,8 @@ const Addschedule = () => {
   const handleCreate = async () => {
     setLoading(true)
 
-    const fee = utils.parseEther(price)
-    console.log("fee", fee)
+    // const fee = utils.parseEther(price)
+    // console.log("fee", fee)
 
     const date = +new Date(datetime)
     console.log(date)
@@ -44,7 +44,7 @@ const Addschedule = () => {
     const xtelptContract = new ethers.Contract(xtelptAddress, abi, signer)
 
     try {
-      const createSchedule = await xtelptContract.createSchedule(start, end, fee, desc)
+      const createSchedule = await xtelptContract.createSchedule(start, end, desc)
       setClose(true)
 
     } catch (error) {
@@ -89,10 +89,11 @@ const Addschedule = () => {
             <div className='w-60 h-12 rounded-[12px] border-4  text-black flex bg-blue-200 self-center ' >
               <input className=' outline-none bg-transparent' onChange={(e) => setDura(e.target.value)} id="Test_timeLocal" type="datetime-local" title='write a duration in hh:mm:ss' /> </div>
           </div>
-          <div className='flex justify-center mt-10 h-12 pr-16 font-bold text-white'> <p className='pr-4 mt-2'> Session Fee </p>
+
+          {/* <div className='flex justify-center mt-10 h-12 pr-16 font-bold text-white'> <p className='pr-4 mt-2'> Session Fee </p>
             <div className='w-60 h-12 rounded-[12px] border-4  text-black flex pl-2 self-center ' >
               <input className=' outline-none bg-transparent text-white' onChange={(e) => setPrice(e.target.value)} id="price" placeholder='Matic' type="number" title='Price in Matic' /> </div>
-          </div>
+          </div> */}
 
           <div className='pl-2 flex justify-center' >
             <input onChange={(e) => setDesc(e.target.value)} maxLength="130" type="text" className='w-[426px] h-[50px] bg-transparent mt-10 text-white rounded-[12px] border-2 pl-2' placeholder='Description' /></div>
