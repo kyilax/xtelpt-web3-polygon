@@ -1,4 +1,4 @@
-![cover](./public/Service.png)
+![cover](./images/xtelptimg.jpeg)
  
 <p align="center">
 <a target="_blank" href="https://nextjs.org/docs/getting-started"><img src="https://img.shields.io/badge/NextJS-000000.svg?style=for-the-badge&logo=Vercel&labelColor=000"/></a>
@@ -44,6 +44,8 @@ This <b>Project</b> was made possible with ```TailwindCSS```, ```Huddle01```, ``
 - Ability for a host to create a meeting and a user to enter the meeting.
 - Becoming a volunteer for a campaign.
 - Add profile name, pictures, bio and profession.
+- Nft Marketplace
+- Owned Nft Collection
 - A Decentralized WEBRTC for calls.
 - Notification.
 - Creating Schedules for Hosts.
