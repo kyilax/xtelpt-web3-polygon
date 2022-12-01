@@ -60,13 +60,15 @@ npm install
 yarn hardhat deploy --network mumbai
 ```
 ## Documentation
+
+## XTELPT contract
 Multiple methods provide ways to interact with the XTELPT smart contract. Those are listed below in detail.
-### 1. Changing the meeting access
+#### 1. Changing the meeting access
 ```
 createUser(string memory _year, string memory _month);
 ```
 This function can only called by the owner of the contract to change the meeting access pass details, which is the requirement on the NFT needed to enter a meeting
-### 2. Checking Access
+#### 2. Checking Access
 ```
  function checkAccess(string memory _year, string memory _month) public onlyOwner view returns(bool) {
         if(keccak256(abi.encodePacked(AccessPass.month)) == keccak256(abi.encodePacked(_month))
@@ -78,44 +80,44 @@ This function can only called by the owner of the contract to change the meeting
     }
 ```
 Only the owner of the contract can call this function it helps to check if a user nft has the required attribute meeting the access requirement.
-### 2. How to create a User profile
+#### 3. How to create a User profile
 ```
 createUser(uint256 _rating, string memory _name, string memory _pic, string memory _bio);
 ```
 This will create the a User profile using your public address which is the ```msg.sender```.
 ```_rating``` is a integer, while ```_name _pic _bio``` are string.
-### 3. How to create a Host profile
+#### 4. How to create a Host profile
 ```
 createHost(uint256 _rating, string memory _name, string memory _pic, string memory _bio);
 ```
 This will create the a Host profile using your public address which is the ```msg.sender```.
 ```_rating``` is a integer, while ```_name _pic _bio``` are string.
-### 4.  How to Create a Schedule or Meeting
+#### 5.  How to Create a Schedule or Meeting
 Only an account with a **Host** in order to create a schedule four parameters are required which are ```start```, ```end```, ```fee``` and ```desc```.
 ```
 createSchedule(uint256 _start, uint256 _end, uint256 _fee, string memory _desc)
 ```
-### 5. Joining a Meeting
+#### 6. Joining a Meeting
 Only **User** can call this function, it takes the address of a specific host and the ID of a meeting created and assign the user to the meeting
 ```
 joinMeeting(address _host, uint256 _id)
 ```
-### 6.  Creating a Campaign
+#### 7.  Creating a Campaign
 Only an account with a **User** can create a campaign, when this function is called it creates a campaign and assigns randomly any volunteer which is a host when a user getHelp if host are avaliable in the particular campaign and then the campaigns start, it gives the user ability to create a meeting between user and a random **host**.
 ```
 createCampaign(string memory _name, string memory _desc, string memory _image)
 ```
-### 7.  Get Help
+#### 8.  Get Help
 Only an account with a **User** can call the getHelp function it assigns the user to the campaign and assigns a host from the list of volunteers for the campaign to the meeting.
 ```
 getHelp(uint256 _id)
 ```
-### 8.  Ending a campaign
+#### 9.  Ending a campaign
 Only an account with a **User** can end a campaign, when this function is called it takes the address of the **User** and the **Id** of the campaign in order to close the campaign
 ```
 endCampaign(address _user, uint256 _id)
 ```
-### 9.  End meeting function called by chainlink automation
+#### 10.  End meeting function called by chainlink automation
 This is the ```chainlink``` automation function which is called every 24hrs.
 <a href="https://automation.chain.link/mumbai/41752764193460630660259591557567796324121401828891767850615051925910905870876" target="_blank">Link</a> to the automation 
 ```
@@ -129,7 +131,7 @@ function endMeeting() public {
         }
     }
  ```
-### 10.  Edit Campaign only owner
+#### 11.  Edit Campaign only owner
 This function can only be called by the owner of the smart contract to make changes to the campaign that is still active
 ```
 function editCampaign(uint256 _id, string memory _name, string memory _desc, string memory _image) public onlyOwner {
@@ -138,7 +140,40 @@ function editCampaign(uint256 _id, string memory _name, string memory _desc, str
     Campaign[_id].desc = _desc;
 }
 ```
-### 11.  Getter Functions
+#### 12.  Getter Functions
 This is used to get variables, struct which the frontend can interact with.
+
+## XTELPT NFT contract
+Multiple methods provide ways to interact with the XTELPT smart contract. Those are listed below in detail.
+#### 1. minting NFT
+```
+function safeMint(address to, string memory uri, uint256 num) public{
+        for(uint256 i = 0; i < num; i++){
+            uint256 tokenId = _tokenIdCounter.current();
+
+            _tokenIdCounter.increment();
+            _safeMint(to, tokenId);
+            _setTokenURI(tokenId, uri);
+
+            ownedNFT memory NewNFT;
+            NewNFT.uri = uri;
+      
+            myNFT[msg.sender].push(NewNFT);
+
+        }
+    }
+
+```
+This function takes the address to mint the NFTs, the uri or ipfs hash, and the number of NFTs to be minted
+
+#### 2. getting NFT
+```
+function getMyNFT(address _addr) public view returns (ownedNFT [] memory) {
+        return myNFT[_addr];
+    }
+
+```
+This function takes the address of a user and returns an array of uri of nfts.
+
 <h4>Liked the work ?</h4>
 Give the repository a star :-)
