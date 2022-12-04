@@ -63,6 +63,9 @@ Here is [link](https://automation.chain.link/mumbai/5984717431353687618034127328
 ### Incoming Community Feature:<br/>
 - xtelpt is enacting a reward gifting system for uncoerced individuals for being in stilt to others and sharing remedies for them in times of need in the community , xtelpt communites will serve as a trestle for mental health awareness programs where individuals can obliterate self-stigmatization, learning from previous experiences and getting to see ratified solutions of near same problem they are facing.
 
+### NFt marketplace
+The XTELPT marketplace is for users to buy monthly passes in other to access host’s sessions for each month and after the month elapses the nft has to be renewed for the next month.
+
 
 ## Issues
 - Some of the packages we felt were ```NextJS``` fit for the project were depreciated versions so we had to stress a little in finding other best packages
